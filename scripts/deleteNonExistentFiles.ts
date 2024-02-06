@@ -81,6 +81,8 @@ export default async function* deleteNonExistentFiles() {
         fileIds.push(file.id);
       }
 
+      if (fileIds.length == 0) return;
+
       await knex("drive_file")
         .whereIn("id", fileIds)
         .delete()
