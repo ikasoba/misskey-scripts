@@ -5,9 +5,12 @@ import timers from "timers/promises";
 
 export class FetchWorker {
   static threshold = parseInt(process.env["FetchWorker_threshold"] ?? "30000");
+  static maxConnect = parseInt(process.env["FetchWorker_maxConnect"] ?? "3");
 
-  private hosts: Map<string, { delay: number; lastUpdatedAt: number }> =
-    new Map();
+  private hosts: Map<
+    string,
+    { delay: number; lastUpdatedAt: number; count: number }
+  > = new Map();
 
   fetch = (_url: URL | string, init?: RequestInit): Promise<Response> => {
     const url = new URL(_url);
@@ -15,6 +18,7 @@ export class FetchWorker {
     const info = this.hosts.get(url.hostname) ?? {
       delay: 0,
       lastUpdatedAt: Date.now(),
+      count: 0,
     };
 
     this.hosts.set(url.hostname, info);
@@ -29,7 +33,13 @@ export class FetchWorker {
             );
     }
 
-    info.delay += 1;
+    if (info.count >= FetchWorker.maxConnect) {
+      info.delay += 1;
+      info.count = 0;
+    } else {
+      info.count += 1;
+    }
+
     info.lastUpdatedAt = Date.now();
 
     const delay = info.delay;

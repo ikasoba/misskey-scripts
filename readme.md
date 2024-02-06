@@ -10,6 +10,12 @@
 
   デフォルト: `30000`
 
+- FetchWorker_maxConnect
+
+  HTTP リクエスト時に同一ドメインへ接続できる最大数を設定します。
+
+  デフォルト: `3`
+
 - TaskQueue_maxTasks
 
   同時に実行できるタスクの数
