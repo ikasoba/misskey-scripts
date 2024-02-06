@@ -1,0 +1,22 @@
+{
+  "type": "module",
+  "bin": {
+    "miscripts": "./dist/main.js"
+  },
+  "scripts": {
+    "prepare": "tsc --build",
+    "start": "node --loader ts-node/esm ./main.ts"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "knex": "^3.1.0",
+    "pg": "^8.11.3",
+    "typescript": "^5.3.3",
+    "yaml": "^2.3.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.16",
+    "@types/pg": "^8.11.0",
+    "ts-node": "^10.9.2"
+  }
+}

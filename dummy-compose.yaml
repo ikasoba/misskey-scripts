@@ -1,0 +1,9 @@
+services:
+  db:
+    image: postgres:15
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: dummy
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: misskey
