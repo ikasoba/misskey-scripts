@@ -27,7 +27,6 @@ export default async function* deleteBrokenEmojis() {
   ) =>
     knex
       .select("*")
-      .andWhere("storedInternal", true)
       .orderBy("id", "asc")
       .limit(limit)
       .offset(offset)
