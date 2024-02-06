@@ -8,6 +8,7 @@ import { TaskQueue } from "./utils/TaskQueue.js";
 import { FetchWorker } from "./utils/FetchWorker.js";
 import path from "path";
 import deleteNonExistentFiles from "./scripts/deleteNonExistentFiles.js";
+import deleteBrokenEmojis from "./scripts/deleteBrokenEmojis.js";
 
 const args = process.argv.slice(2);
 
@@ -36,6 +37,7 @@ const scriptContext = {
 const scripts: Record<string, () => Promise<void>> = {
   resolveBrokenAvatars: bindContext(resolveBrokenAvatars, scriptContext),
   deleteNonExistentFiles: bindContext(deleteNonExistentFiles, scriptContext),
+  deleteBrokenEmojis: bindContext(deleteBrokenEmojis, scriptContext),
 };
 
 const scriptName = args[1];

@@ -36,7 +36,7 @@ export default async function* deleteNonExistentFiles() {
 
   await queue.push(
     "Start delete non-existent files",
-    async function processResolve(offset: number = 0): Promise<void> {
+    async function processDelete(offset: number = 0): Promise<void> {
       const files = await getFiles(offset);
 
       console.info("🏃 files count:", files.length, "offset:", offset);
@@ -48,7 +48,7 @@ export default async function* deleteNonExistentFiles() {
       queue.push("Delete non-existent files", () =>
         timers
           .setTimeout(parseInt(process.env["process_delay"] ?? "5000"))
-          .then(() => processResolve(offset + files.length))
+          .then(() => processDelete(offset + files.length))
       );
 
       const fileIds: string[] = [];

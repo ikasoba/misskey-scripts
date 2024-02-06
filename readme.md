@@ -62,6 +62,20 @@ $ miscripts <misskey-config-path> <script-name>
 
 - process_delay
 
-  タスクごとに実行する時間をミリ秒単位でずらす
+  タスクごとに実行する時間をミリ秒単位でづらす
 
   デフォルト: `5000`
+
+## deleteBrokenEmojis
+
+壊れた絵文字を削除します。
+
+### 環境変数
+
+以下の環境変数から細かく挙動を調整できます。
+
+- process_limit
+
+  一度に処理する絵文字の数を制限します。
+
+  デフォルト: `10`
