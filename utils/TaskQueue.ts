@@ -39,7 +39,11 @@ export class TaskQueue {
       this.runTask(task);
     }
 
-    return timers.setTimeout(this.delay).then(() => this.start());
+    if (this.runningTasks == 0 && this.queue.length == 0) {
+      return;
+    } else {
+      return timers.setTimeout(this.delay).then(() => this.start());
+    }
   }
 
   async runTask<T>(task: Task<T>): Promise<void> {

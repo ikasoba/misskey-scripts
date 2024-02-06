@@ -22,9 +22,9 @@ export async function* resolveAvatarFromUser(user: User) {
     headers: {
       Accept: "application/activity+json",
     },
-  });
+  }).catch(() => null);
 
-  if (!result.ok) return;
+  if (!result?.ok) return;
 
   const userObject: unknown = await result.json();
   if (typeof userObject != "object" || userObject == null) return;
@@ -78,7 +78,7 @@ export default async function* resolveBrokenAvatars() {
       console.info("🏃 users count:", users.length, "offset:", offset);
 
       if (users.length <= 0) {
-        queue.push("exit", () => process.exit(0));
+        return;
       }
 
       queue.push("Resolve broken avatars", () =>
@@ -108,7 +108,9 @@ export default async function* resolveBrokenAvatars() {
           colors.green(user.avatarUrl)
         );
 
-        const { ok: isSafe } = await fetch(user.avatarUrl);
+        const { ok: isSafe } = await fetch(user.avatarUrl).catch(() => ({
+          ok: false,
+        }));
 
         if (!isSafe) {
           console.info(
