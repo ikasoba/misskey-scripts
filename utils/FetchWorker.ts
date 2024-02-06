@@ -5,7 +5,7 @@ import timers from "timers/promises";
 
 export class FetchWorker {
   static threshold = parseInt(process.env["FetchWorker_threshold"] ?? "30000");
-  static maxConnect = parseInt(process.env["FetchWorker_maxConnect"] ?? "3");
+  static maxConnect = parseInt(process.env["FetchWorker_maxConnect"] ?? "1");
 
   private hosts: Map<
     string,
@@ -33,11 +33,11 @@ export class FetchWorker {
             );
     }
 
+    info.count += 1;
+
     if (info.count >= FetchWorker.maxConnect) {
       info.delay += 1;
       info.count = 0;
-    } else {
-      info.count += 1;
     }
 
     info.lastUpdatedAt = Date.now();
