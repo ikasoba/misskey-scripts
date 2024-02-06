@@ -63,12 +63,15 @@ export default async function* deleteBrokenEmojis() {
           colors.green(emoji.name),
           "host:",
           colors.green(emoji.host ?? "<null>"),
-          "avatarUrl:",
+          "publicUrl:",
           colors.green(emoji.publicUrl)
         );
 
         const isBroken = await fetch(
-          new URL(`./${emoji.name}@${emoji.host}.webp`, config.url)
+          new URL(`./${emoji.name}@${emoji.host}.webp`, config.url),
+          {
+            redirect: "manual",
+          }
         )
           .catch(() => true)
           .then(() => false);
