@@ -78,7 +78,7 @@ export default async function* resolveBrokenAvatars() {
       console.info("🏃 users count:", users.length, "offset:", offset);
 
       if (users.length <= 0) {
-        process.exit(0);
+        queue.push("exit", () => process.exit(0));
       }
 
       queue.push("Resolve broken avatars", () =>
