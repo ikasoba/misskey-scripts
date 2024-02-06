@@ -72,15 +72,17 @@ export default async function* resolveBrokenAvatars() {
 
   await queue.push(
     "Start script to resolve broken avatars",
-    async function process(offset: number = 0): Promise<void> {
+    async function processResolve(offset: number = 0): Promise<void> {
       const users = await getUsers(offset);
 
       console.info("🏃 users count:", users.length, "offset:", offset);
 
-      if (users.length <= 0) return;
+      if (users.length <= 0) {
+        process.exit(0);
+      }
 
       queue.push("Resolve broken avatars", () =>
-        process(offset + users.length)
+        processResolve(offset + users.length)
       );
 
       const fixedUsers = new Map<User, string>();
@@ -162,6 +164,4 @@ export default async function* resolveBrokenAvatars() {
         });
     }
   );
-
-  process.exit(0);
 }
