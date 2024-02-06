@@ -6,6 +6,7 @@ import timers from "timers/promises";
 import { TypeOf, inject } from "../utils/DI.js";
 import { TaskQueue } from "../utils/TaskQueue.js";
 import { FetchWorker } from "../utils/FetchWorker.js";
+import { MisskeyConfig } from "../configs/index.js";
 
 export interface MiEmoji {
   id: string;
@@ -18,6 +19,7 @@ export default async function* deleteBrokenEmojis() {
   const knex = yield* inject("knex", TypeOf<Knex>);
   const queue = yield* inject("taskQueue", TypeOf<TaskQueue>);
   const fetchWorker = yield* inject("fetchWorker", TypeOf<FetchWorker>);
+  const config = yield* inject("miConfig", TypeOf<MisskeyConfig>);
 
   const { fetch } = fetchWorker;
 
@@ -28,6 +30,7 @@ export default async function* deleteBrokenEmojis() {
     knex
       .select("*")
       .orderBy("id", "asc")
+      .whereNotNull("host")
       .limit(limit)
       .offset(offset)
       .from("emoji")
@@ -52,7 +55,7 @@ export default async function* deleteBrokenEmojis() {
 
       const emojiIds: string[] = [];
       for (const emoji of emojis) {
-        if (processedIds.has(emoji.id)) continue;
+        if (processedIds.has(emoji.id) || emoji.host == null) continue;
 
         console.info(
           "👀 Check if emoji is broken -",
@@ -64,11 +67,13 @@ export default async function* deleteBrokenEmojis() {
           colors.green(emoji.publicUrl)
         );
 
-        const isNoExistent = await fetch(emoji.publicUrl)
+        const isBroken = await fetch(
+          new URL(`./${emoji.name}@${emoji.host}.webp`, config.url)
+        )
           .catch(() => true)
           .then(() => false);
 
-        if (isNoExistent) emojiIds.push(emoji.id);
+        if (isBroken) emojiIds.push(emoji.id);
       }
 
       if (emojiIds.length <= 0) return;
