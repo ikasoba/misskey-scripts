@@ -68,7 +68,7 @@ export default async function* deleteBrokenEmojis() {
         );
 
         const isBroken = await fetch(
-          new URL(`./${emoji.name}@${emoji.host}.webp`, config.url),
+          new URL(`./emojis/${emoji.name}@${emoji.host}.webp`, config.url),
           {
             redirect: "manual",
           }
