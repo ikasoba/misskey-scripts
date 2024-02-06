@@ -59,3 +59,9 @@ $ miscripts <misskey-config-path> <script-name>
   一度に処理するファイルの数を制限します。
 
   デフォルト: `10`
+
+- process_delay
+
+  タスクごとに実行する時間をミリ秒単位でずらす
+
+  デフォルト: `5000`

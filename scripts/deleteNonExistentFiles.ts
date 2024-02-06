@@ -1,11 +1,9 @@
-import colors from "colors";
 import { Knex } from "knex";
-import fs from "fs/promises";
-import { TypeOf, bindContext, inject } from "../utils/DI.js";
-import { FetchWorker } from "../utils/FetchWorker.js";
-import { TaskQueue } from "../utils/TaskQueue.js";
-import { MisskeyConfig } from "../configs/index.js";
+import fs from "fs";
 import path from "path";
+import timers from "timers/promises";
+import { TypeOf, inject } from "../utils/DI.js";
+import { TaskQueue } from "../utils/TaskQueue.js";
 
 export interface MiFile {
   id: string;
@@ -48,46 +46,34 @@ export default async function* deleteNonExistentFiles() {
       }
 
       queue.push("Delete non-existent files", () =>
-        processResolve(offset + files.length)
+        timers
+          .setTimeout(parseInt(process.env["process_delay"] ?? "5000"))
+          .then(() => processResolve(offset + files.length))
       );
 
       const fileIds: string[] = [];
-
       for (const file of files) {
         if (processedIds.has(file.id)) continue;
 
         processedIds.add(file.id);
 
-        console.info(
-          "👀 Check file existence -",
-          "name:",
-          colors.green(file.name),
-          "url:",
-          colors.green(file.url)
-        );
-
         const fileName = new URL(file.url).pathname.match(
           /files\/([^\/]+)\/?$/
         )?.[1];
         if (fileName) {
-          const isNonExistentFile = await fs
-            .access(path.join(filesRoot, fileName))
-            .catch((err) => err?.code == "ENOENT")
-            .then(() => false);
-
-          if (!isNonExistentFile) continue;
+          if (fs.existsSync(path.join(filesRoot, fileName))) continue;
         }
 
         fileIds.push(file.id);
       }
 
-      if (fileIds.length == 0) return;
+      if (fileIds.length <= 0) return;
 
       await knex("drive_file")
         .whereIn("id", fileIds)
         .delete()
         .then(() => {
-          console.info(`✅ ${fileIds.length} files have been updated.`);
+          console.info(`✅ ${fileIds.length} files have been deleted.`);
         })
         .catch((err) => console.error(err));
     }
