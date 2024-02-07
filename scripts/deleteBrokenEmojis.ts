@@ -73,8 +73,8 @@ export default async function* deleteBrokenEmojis() {
             redirect: "manual",
           }
         )
-          .catch(() => true)
-          .then(() => false);
+          .then((res) => !res.ok)
+          .catch(() => true);
 
         if (isBroken) emojiIds.push(emoji.id);
       }
