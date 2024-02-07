@@ -76,7 +76,9 @@ export default async function* deleteBrokenEmojis() {
           .then((res) => !res.ok)
           .catch(() => true);
 
-        if (isBroken) emojiIds.push(emoji.id);
+        if (isBroken) {
+          emojiIds.push(emoji.id);
+        }
       }
 
       if (emojiIds.length <= 0) return;
